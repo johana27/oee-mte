@@ -4,95 +4,590 @@
 
 {% block content %}
 
-<h1 class="page-title"> Dashboard </h1>
-<p class="page-subtitle"> Gráficas para la máquina {{cell.name}} </p>
+<style>
+    :root {
+        --color-primary: #3B82F6;      /* Azul */
+        --color-success: #10B981;      /* Verde */
+        --color-warning: #F59E0B;      /* Amarillo */
+        --color-danger: #EF4444;       /* Rojo */
+        --color-purple: #8B5CF6;       /* Púrpura */
+        --color-cyan: #06B6D4;         /* Cian */
+    }
 
-<div class="card">
-    <p class="card-title"> Producción mensual </p>
-    <p class="card-subtitle"> Resúmen de la producción del mes de </p>
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 10px;">
-        <div class="card">
-            <p class="card-title"> Piezas planeadas al momento. </p>
-            {{ sum_planned_pieces }}
+    /* Grid para las dos secciones principales */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    /* Grid para las tarjetas de estadísticas - VERTICAL */
+    .production-stats-grid {
+        display: flex;
+        flex-direction: column;  /* Cambiado a columna */
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .stat-card-enhanced {
+        background-color: #374151;
+        border-radius: 0.5rem;
+        padding: 1.25rem 1.5rem;
+        border-left: 4px solid var(--accent-color);
+        border: 1px solid #4b5563;
+        width: 100%;
+        display: flex;
+        flex-direction: row;  
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stat-card-enhanced.blue { --accent-color: var(--color-primary); }
+    .stat-card-enhanced.green { --accent-color: var(--color-success); }
+    .stat-card-enhanced.purple { --accent-color: var(--color-purple); }
+    .stat-card-enhanced.yellow { --accent-color: var(--color-warning); }
+    .stat-card-enhanced.red { --accent-color: var(--color-danger); }
+
+    .stat-content-enhanced {
+        flex: 1;
+    }
+
+    .stat-label-enhanced {
+        font-size: 0.7rem;
+        color: #9CA3AF;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.35rem;
+    }
+
+    .stat-value-enhanced {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-description-enhanced {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+    }
+
+    .stat-icon-enhanced {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .stat-icon-enhanced.blue { 
+        background-color: rgba(59, 130, 246, 0.15);
+        color: var(--color-primary);
+    }
+    .stat-icon-enhanced.green { 
+        background-color: rgba(16, 185, 129, 0.15);
+        color: var(--color-success);
+    }
+    .stat-icon-enhanced.purple { 
+        background-color: rgba(139, 92, 246, 0.15);
+        color: var(--color-purple);
+    }
+    .stat-icon-enhanced.red { 
+        background-color: rgba(255, 0, 0, 0.2);
+        color: var(--color-danger);
+    }
+    .stat-icon-enhanced.yellow { 
+        background-color: rgba(255, 255, 0, 0.2);
+        color: var(--color-warning);
+    }
+
+    /* Sección de resumen */
+    .summary-section {
+        background-color: #2d3748;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        border: 1px solid #4a5568;
+    }
+
+    .summary-header {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #4a5568;
+    }
+
+    .summary-title h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .summary-title p {
+        font-size: 0.8rem;
+        color: #9CA3AF;
+        margin: 0;
+    }
+
+    /* Grid para las gráficas */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .card {
+        background-color: #2d3748;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        border: 1px solid #4a5568;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .card-description {
+        font-size: 0.8rem;
+        color: #9CA3AF;
+        margin: 0 0 1rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<h1 class="page-title">Dashboard</h1>
+<p class="page-subtitle">Gráficas para la máquina {{cell.name}}</p>
+
+
+<div class="main-grid">
+    <!-- Sección de producción mensual -->
+    <div class="summary-section">
+        <div class="summary-header">
+            <div class="summary-title">
+                <h2>Producción semanal</h2>
+                <p>Resumen de la producción de la semana actual</p>
+            </div>
         </div>
-        <div class="card">
-            <p class="card-title"> Piezas realizadas al momento. </p>
-            {{ sum_total_pieces }}
+
+        <div class="production-stats-grid">
+            <!-- Piezas Planeadas -->
+            <div class="stat-card-enhanced blue">
+                <div class="stat-content-enhanced">
+                    <div class="stat-label-enhanced">Objetivo Planeado</div>
+                    <div class="stat-value-enhanced">{{ sum_planned_pieces }}</div>
+                    <div class="stat-description-enhanced">
+                        Piezas esperadas al momento
+                    </div>
+                </div>
+                <div class="stat-icon-enhanced blue">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Piezas Realizadas -->
+            <div class="stat-card-enhanced green">
+                <div class="stat-content-enhanced">
+                    <div class="stat-label-enhanced">Producción Real</div>
+                    <div class="stat-value-enhanced">{{ sum_total_pieces }}</div>
+                    <div class="stat-description-enhanced">
+                        Piezas completadas
+                    </div>
+                </div>
+                <div class="stat-icon-enhanced green">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Efectividad -->
+            <div class="stat-card-enhanced purple">
+                <div class="stat-content-enhanced">
+                    <div class="stat-label-enhanced">Efectividad</div>
+                    <div class="stat-value-enhanced">{{ completion_percentage }}%</div>
+                    <div class="stat-description-enhanced">
+                        Porcentaje de cumplimiento
+                    </div>
+                </div>
+                <div class="stat-icon-enhanced purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                </div>
+            </div>
         </div>
-        <div class="card">
-            <p class="card-title"> Porcentaje de efectividad. </p>
-            {{ completion_percentage }} %
+    </div>
+
+    <!-- Sección de defectos mensuales -->
+    <div class="summary-section">
+        <div class="summary-header">
+            <div class="summary-title">
+                <h2>Defectos semanal</h2>
+                <p>Resumen de los defectos y tiempos muertos de la semana.</p>
+            </div>
+        </div>
+
+        <div class="production-stats-grid">
+            <!-- Objetivo Planeado -->
+            <div class="stat-card-enhanced red">
+                <div class="stat-content-enhanced">
+                    <div class="stat-label-enhanced"> Defectos </div>
+                    <div class="stat-value-enhanced">{{ total_defects }}</div>
+                    <div class="stat-description-enhanced">
+                        Defectos generados. 
+                    </div>
+                </div>
+                <div class="stat-icon-enhanced red">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bug" viewBox="0 0 16 16">
+                        <path d="M4.355.522a.5.5 0 0 1 .623.333l.291.956A5 5 0 0 1 8 1c1.007 0 1.946.298 2.731.811l.29-.956a.5.5 0 1 1 .957.29l-.41 1.352A5 5 0 0 1 13 6h.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 1 1 0v.5A1.5 1.5 0 0 1 13.5 7H13v1h1.5a.5.5 0 0 1 0 1H13v1h.5a1.5 1.5 0 0 1 1.5 1.5v.5a.5.5 0 1 1-1 0v-.5a.5.5 0 0 0-.5-.5H13a5 5 0 0 1-10 0h-.5a.5.5 0 0 0-.5.5v.5a.5.5 0 1 1-1 0v-.5A1.5 1.5 0 0 1 2.5 10H3V9H1.5a.5.5 0 0 1 0-1H3V7h-.5A1.5 1.5 0 0 1 1 5.5V5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 .5.5H3c0-1.364.547-2.601 1.432-3.503l-.41-1.352a.5.5 0 0 1 .333-.623M4 7v4a4 4 0 0 0 3.5 3.97V7zm4.5 0v7.97A4 4 0 0 0 12 11V7zM12 6a4 4 0 0 0-1.334-2.982A3.98 3.98 0 0 0 8 2a3.98 3.98 0 0 0-2.667 1.018A4 4 0 0 0 4 6z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Producción Real -->
+            <div class="stat-card-enhanced yellow">
+                <div class="stat-content-enhanced">
+                    <div class="stat-label-enhanced"> Tiempo muerto </div>
+                    <div class="stat-value-enhanced">{{ sum_downtime }}</div>
+                    <div class="stat-description-enhanced">
+                        Tiempo muerto en minutos
+                    </div>
+                </div>
+                <div class="stat-icon-enhanced yellow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                        <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+<div class="charts-grid">
+    <!-- Gráfica OEE -->
     <div class="card">
-        <p class="card-title"> OEE mensual </p>
+        <p class="card-title">OEE mensual</p>
+        <p class="card-description"> Total del mes actual </p>
         <canvas id="oeeChart" style="max-width: 400px; max-height: 300px;"></canvas>
     </div>
+    
+    <!-- Gráfica tiempo muerto -->
+    <div class="card">
+        <p class="card-title">Tiempo de inactividad</p>
+        <p class="card-description">Total del mes actual</p>
+        <canvas id="downtimeChart" style="max-width: 400px; max-height: 300px;"></canvas>
+    </div>
+
+    <!-- Principales defectos -->
+    <div class="card">
+        <p class="card-title">Causa de defectos</p>
+        <p class="card-description">Principales del mes actual</p>
+        <div class="table-container"></div>
+    </div>
 </div>
 
-<script>
-    const ctx = document.getElementById("oeeChart").getContext("2d");
+<div>
+    <!-- OEE por día -->
+    <div class="card">
+        <div style="width: 80%; margin: 20px auto;">
+            <canvas id="oeeDailyChart"></canvas>
+        </div>
+    </div>
+</div>
 
-    const data = {
-    labels: ["Availability", "Performance", "Quality"],
-    datasets: [{
-        data: [
-            {{ avg_availability }},
-            {{ avg_performance }},
-            {{ avg_quality }}
-        ],
-        backgroundColor: ["#36A2EB", "#FFCE56", "#4BC0C0"],
-        hoverOffset: 10
-        }]
-    };
 
-    const centerText = {
-        id: 'centerText',
-        beforeDraw(chart) {
-        const {width} = chart;
-        const {height} = chart;
-        const ctx = chart.ctx;
-        ctx.restore();
-        ctx.font = "bold 15px Arial";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "#000";
-        const text = "{{ month }}%";
-        const textX = Math.round((width - ctx.measureText(text).width) / 2);
-        const textY = height / 2;
-        ctx.fillText(text, textX, textY);
-        ctx.save();
-        }
-    };
+{% block extra_js %}
+    <script>
+        const ctx = document.getElementById("oeeChart").getContext("2d");
 
-    const config = {
-        type: "doughnut",
-        data: data,
-        options: {
-        plugins: {
-            tooltip: {
-            callbacks: {
-                label: function(context) {
-                let label = context.label || '';
-                let value = context.raw || 0;
-                return `${label}: ${value}%`;
+        const data = {
+            labels: ["Disponibilidad", "Rendimiento", "Calidad"],
+            datasets: [{
+                data: [
+                    {{ avg_availability }},
+                    {{ avg_performance }},
+                    {{ avg_quality }}
+                ],
+                backgroundColor: [
+                    "#3B82F6",
+                    "#F59E0B",
+                    "#10B981"
+                ],
+                borderColor: [
+                    "#2563EB",
+                    "#D97706",
+                    "#059669"
+                ],
+                borderWidth: 2,
+                hoverOffset: 10
+            }]
+        };
+
+        const centerText = {
+            id: 'centerText',
+            beforeDraw(chart) {
+                const {width, height} = chart;
+                const ctx = chart.ctx;
+                ctx.restore();
+                
+                ctx.font = "bold 24px Arial";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#FFFFFF";
+                ctx.textAlign = "center";
+                const text = "{{ month }}%";
+                ctx.fillText(text, width / 2, height / 2 - 8);
+                
+                ctx.font = "12px Arial";
+                ctx.fillStyle = "#A0AEC0";
+                ctx.fillText("OEE Total", width / 2, height / 2 + 15);
+                
+                ctx.save();
+            }
+        };
+
+        const config = {
+            type: "doughnut",
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(45, 55, 72, 0.95)',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#E2E8F0',
+                        borderColor: '#4A5568',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.raw || 0;
+                                return `${label}: ${value}%`;
+                            }
+                        }
+                    },
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            color: '#E2E8F0',
+                            padding: 12,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            },
+            plugins: [centerText]
+        };
+
+        new Chart(ctx, config);
+    </script>
+
+    <script>
+        const ctxDowntime = document.getElementById("downtimeChart").getContext("2d");
+
+        const downtimeData = {
+            labels: ["Tiempo de inactividad", "Tiempo productivo"],
+            datasets: [{
+                data: [
+                    {{ sum_downtime }},
+                    {{ operating_minutes }},
+                ],
+                backgroundColor: [
+                    "#EF4444",   // rojo
+                    "#10B981"    // verde
+                ],
+                borderColor: [
+                    "#DC2626",
+                    "#059669"
+                ],
+                borderWidth: 2,
+                hoverOffset: 10
+            }]
+        };
+
+        // 🧩 Plugin para mostrar el texto en el centro
+        const centerTextPlugin = {
+            id: 'centerText',
+            afterDraw(chart) {
+                const { ctx, chartArea: { width, height } } = chart;
+                ctx.save();
+
+                // Texto que se mostrará (puedes personalizarlo)
+                const downtime = {{ sum_downtime }};
+                const label = "Inactividad";
+                const text = `${downtime} min`;
+
+                // Estilos de texto
+                ctx.font = 'bold 20px Arial';
+                ctx.fillStyle = '#E2E8F0';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Posición del texto
+                ctx.fillText(label, width / 2, height / 2 - 12);
+                ctx.font = 'bold 24px Arial';
+                ctx.fillText(text, width / 2, height / 2 + 16);
+
+                ctx.restore();
+            }
+        };
+
+        const downtimeConfig = {
+            type: "doughnut",
+            data: downtimeData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(45, 55, 72, 0.95)',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#E2E8F0',
+                        borderColor: '#4A5568',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.raw || 0;
+                                return `${label}: ${value} min`;
+                            }
+                        }
+                    },
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            color: '#E2E8F0',
+                            padding: 12,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                cutout: '65%' // radio del hueco central
+            },
+            plugins: [centerTextPlugin] // 👈 aquí activamos el plugin
+        };
+
+        new Chart(ctxDowntime, downtimeConfig);
+    </script>
+
+
+    <script>
+        const ctxDaily = document.getElementById('oeeDailyChart').getContext('2d');
+        const oeeDailyChart = new Chart(ctxDaily, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: 'OEE %',
+                    data: {{ chart_data|safe }},
+                    backgroundColor: {{ chart_colors|safe }},
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#E2E8F0',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'OEE Diario del Mes',
+                        color: '#FFFFFF',
+                        font: {
+                            size: 18
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(45, 55, 72, 0.95)',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#E2E8F0',
+                        borderColor: '#4A5568',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                return 'OEE: ' + context.parsed.y.toFixed(2) + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: '#E2E8F0',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'OEE (%)',
+                            color: '#FFFFFF'
+                        },
+                        grid: {
+                            color: 'rgba(74, 85, 104, 0.3)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#E2E8F0'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Día del Mes',
+                            color: '#FFFFFF'
+                        },
+                        grid: {
+                            color: 'rgba(74, 85, 104, 0.3)'
+                        }
+                    }
                 }
             }
-            },
-            legend: {
-            position: "bottom"
-            }
-        }
-        },
-        plugins: [centerText]
-    };
-
-    new Chart(ctx, config);
-</script>
-
+        });
+    </script>
 {% endblock %}
 
-
-
+{% endblock %}

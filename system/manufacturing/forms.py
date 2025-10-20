@@ -29,16 +29,33 @@ PlannedProductionFormSet = formset_factory(PlannedProductionFullForm, extra=1, c
 # =========================================
 # Form para registrar el hora por hora
 # =========================================
+class HourlyProductionForm(forms.ModelForm):
+    class Meta:
+        model = hourlyProduction
+        fields = ["hour", "pieces", "production_detail"]
+        widgets = {
+            "hour": forms.Select(attrs={"class": "form-input"}),
+            "pieces": forms.NumberInput(attrs={"class": "form-input", "placeholder": "0"}),
+            "production_detail": forms.Select(attrs={"class":"form-select"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.cell = kwargs.pop('cell', None)
+        self.date = kwargs.pop('date', date.today())
+        super().__init__(*args, **kwargs)
+        if self.cell and self.date:
+            planned = plannedProduction.objects.filter(cell=self.cell, date=self.date)
+            pd_qs = productionDetail.objects.filter(planned_production__in=planned)
+            self.fields['production_detail'].queryset = pd_qs.select_related('model_routing__model')
+            # Mostrar solo el nombre del modelo en el select
+            self.fields['production_detail'].label_from_instance = lambda obj: f"{obj.model_routing.model.name}"
+            #self.fields['production_detail'].label_from_instance = lambda obj: f"{obj.planned_production.workorder}"
+
 HrxhrFormSet = modelformset_factory(
     hourlyProduction,
-    fields=["hour", "pieces", "production_detail"],
+    form=HourlyProductionForm,
     extra=11,
     can_delete=True,
-    widgets={
-        "hour": forms.Select(attrs={"class": "form-input"}),
-        "pieces": forms.NumberInput(attrs={"class": "form-input", "placeholder": "0"}),
-        "production_detail": forms.Select(attrs={"class":"form-select"}),
-    }
 )
 
 # =========================================
@@ -59,6 +76,7 @@ ProductionFormSet = modelformset_factory(
     extra=0,  
     can_delete=False
 )
+
 
 # =========================================
 # Form para registrar tiempos muertos

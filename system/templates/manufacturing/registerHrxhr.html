@@ -7,26 +7,6 @@
 <div class="page-title"> Registrar hora por hora </div>
 <div class="page-subtitle"> Registre los modelos y su cantidad total a producir por hora el día de hoy. </div>
 
-<!-- 🔍 DEBUG TEMPORAL -->
-<div style="background: #fffacd; padding: 15px; margin: 15px; border: 2px solid #ffa500;">
-    <h3>🔍 DEBUG INFO</h3>
-    <p><strong>Total forms:</strong> {{ formset.forms|length }}</p>
-    <p><strong>Verificando field.queryset directamente:</strong></p>
-    {% with first_form=formset.forms.0 %}
-        {% if first_form.production_detail.field.queryset.all %}
-            <p style="color: green;">✅ Hay {{ first_form.production_detail.field.queryset.all|length }} opciones</p>
-            <ul>
-                {% for choice in first_form.production_detail.field.queryset.all %}
-                    <li>{{ choice.id }} - {{ choice }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p style="color: red;">❌ Aún no hay opciones</p>
-        {% endif %}
-    {% endwith %}
-</div>
-<!-- FIN DEBUG -->
-
 <div class="card">
     <p class="card-title"> Hora por hora </p>
     <form method="POST">
@@ -41,17 +21,7 @@
                 {% for f in formset %}
                         <tr>
                             <td style="text-align: center;"> {{ f.hour }} </td>
-                            <td style="text-align: center;"> 
-                                {{ f.production_detail }}
-                                <!-- Debug: cuántas opciones tiene este select -->
-                                <small style="color: #999; display: block; font-size: 10px;">
-                                    {% if f.production_detail.field.queryset.all %}
-                                        {{ f.production_detail.field.queryset.all|length }} opciones
-                                    {% else %}
-                                        0 opciones
-                                    {% endif %}
-                                </small>
-                            </td>
+                            <td style="text-align: center;"> {{ f.production_detail }} </td>
                             <td style="text-align: center;"> {{ f.pieces }} </td>
                         </tr>
                 {% endfor %}

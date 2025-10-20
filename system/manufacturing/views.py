@@ -4,7 +4,7 @@ from .models import Defect, DownTime, hourlyProduction, Production
 from .forms import PlannedProductionFullForm, DownTimeForm, DefectForm, HrxhrFormSet, ProductionFormSet, RecapForm
 from core.models import Cell, modelRouting 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils import timezone
 from django.forms import formset_factory
 from datetime import date
@@ -19,6 +19,7 @@ def machineDetails(request, cell_id):
     production_details = productionDetail.objects.filter(planned_production__cell=cell, planned_production__date=today)
     planned_today = plannedProduction.objects.filter(cell=cell, date=today)
     hrxhr = hourlyProduction.objects.filter(production_detail__planned_production__cell=cell, production_detail__planned_production__date=today)
+    
 
     context = {
         'cell': cell,
@@ -97,7 +98,10 @@ def hrxhr (request, cell_id):
     )
 
     if request.method == "POST":
-        formset = HrxhrFormSet(request.POST, queryset=queryset)
+        formset = HrxhrFormSet(request.POST, queryset=queryset, form_kwargs={
+            'cell': get_object_or_404(Cell, id=cell_id),
+            'date': today,
+        })
         if formset.is_valid():
             instances = formset.save(commit=False)
             for inst in instances:
@@ -105,7 +109,10 @@ def hrxhr (request, cell_id):
                 inst.save()
             return redirect("machineDetails", cell_id=cell_id)
     else:
-        formset = HrxhrFormSet(queryset=queryset)
+        formset = HrxhrFormSet(queryset=queryset, form_kwargs={
+            'cell': get_object_or_404(Cell, id=cell_id),
+            'date': today,
+        })
 
     context = {
         "formset": formset, 
@@ -248,7 +255,7 @@ def recap (request, cell_id):
         if form.is_valid():
             recap_instance = form.save(commit=False) 
             recap_instance.cell = cell
-            recap_instance.pub_date = date.today()
+            recap_instance.pub_date = timezone.now()
             recap_instance.total_planned_pieces = total_planned_pieces
             recap_instance.total_actual_pieces = total_actual_pieces
             recap_instance.total_defects = total_defects

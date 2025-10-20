@@ -50,14 +50,11 @@
 
         <!-- Botones de acción -->
         <div class="flex justify-between mt-6">
-            <button type="button" class="btn btn-outline" onclick="window.history.back()">
-                Cancelar
-            </button>
-            <div class="flex" style="gap: 1rem;">
-                <button type="button" class="btn btn-secondary" onclick="startTimer()">
+            <div class="flex" style="gap: 1rem; float: right;">
+                <button type="button" class="btn btn-secondary" id="timerBtn" onclick="toggleTimer()">
                     Iniciar Timer
                 </button>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-outline">
                     Guardar Registro
                 </button>
             </div>
@@ -65,64 +62,84 @@
     </form>
 </div>
 
-{% endblock %}
-
-{% block extra_js %}
 <script>
-    let timerRunning = false;
-    let startTime = null;
-    let timerInterval = null;
+let timerInterval = null;
+let startTime = null;
+let isRunning = false;
 
-    // Función para iniciar el timer
-    function startTimer() {
-        const startInput = document.querySelector('input[name="start_time"]');
-        const endInput = document.querySelector('input[name="end_time"]');
-        const button = event.target;
-
-        if (!timerRunning) {
-            // Iniciar timer
-            startTime = new Date();
-            const currentTime = startTime.toTimeString().slice(0, 5);
-            startInput.value = currentTime;
-            
-            button.textContent = 'Detener Timer';
-            button.classList.remove('btn-secondary');
-            button.classList.add('btn-warning');
-            timerRunning = true;
-
-            // Actualizar duración cada segundo
-            timerInterval = setInterval(() => {
-                const now = new Date();
-                const diff = now - startTime;
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                
-                document.getElementById('duration').value = `${hours}h ${minutes}m ${seconds}s`;
-            }, 1000);
-        } else {
-            // Detener timer
-            const endTime = new Date();
-            const currentTime = endTime.toTimeString().slice(0, 5);
-            endInput.value = currentTime;
-            
-            button.textContent = 'Iniciar Timer';
-            button.classList.remove('btn-warning');
-            button.classList.add('btn-secondary');
-            timerRunning = false;
-
-            clearInterval(timerInterval);
-            calculateDuration();
-        }
+function toggleTimer() {
+    const btn = document.getElementById('timerBtn');
+    const startInput = document.getElementById('{{ form.start.id_for_label }}');
+    const endInput = document.getElementById('{{ form.end.id_for_label }}');
+    const durationInput = document.getElementById('duration');
+    
+    if (!isRunning) {
+        // Iniciar timer
+        startTime = new Date();
+        startInput.value = formatDateTime(startTime);
+        endInput.value = ''; // Limpiar el campo de fin
+        
+        btn.textContent = 'Detener Timer';
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+        
+        isRunning = true;
+        
+        // Actualizar duración cada segundo
+        timerInterval = setInterval(updateDuration, 1000);
+        updateDuration(); // Actualizar inmediatamente
+        
+    } else {
+        // Detener timer
+        const endTime = new Date();
+        endInput.value = formatDateTime(endTime);
+        
+        clearInterval(timerInterval);
+        timerInterval = null;
+        
+        btn.textContent = 'Iniciar Timer';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+        
+        isRunning = false;
+        
+        // Calcular duración final
+        updateDuration();
     }
+}
 
-    // Event listeners para calcular duración automáticamente
-    document.addEventListener('DOMContentLoaded', function() {
-        const startInput = document.querySelector('input[name="start_time"]');
-        const endInput = document.querySelector('input[name="end_time"]');
+function updateDuration() {
+    const durationInput = document.getElementById('duration');
+    
+    if (!startTime) return;
+    
+    const now = new Date();
+    const diff = Math.floor((now - startTime) / 1000); // diferencia en segundos
+    
+    const hours = Math.floor(diff / 3600);
+    const minutes = Math.floor((diff % 3600) / 60);
+    const seconds = diff % 60;
+    
+    durationInput.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
 
-        startInput.addEventListener('change', calculateDuration);
-        endInput.addEventListener('change', calculateDuration);
-    });
+function formatDateTime(date) {
+    // Formato para input type="datetime-local": YYYY-MM-DDTHH:MM
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+// Limpiar el intervalo si el usuario sale de la página
+window.addEventListener('beforeunload', function() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+});
 </script>
+
 {% endblock %}

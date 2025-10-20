@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes de Producción y OEE{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Reportes de Producción y OEE</h1>
+    <p class="page-subtitle">Genera reportes detallados de producción y métricas OEE por periodo</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Configuración del Reporte</h2>
+    </div>
+    
+    <form method="GET" action="{% url 'reports' %}" id="reportForm">
+        <input type="hidden" name="generate" value="1">
+        
+        <!-- Tipo de Reporte -->
+        <div class="form-group">
+            <label class="form-label">Tipo de Reporte <span class="obligatorio">*</span></label>
+            <select name="report_type" id="reportType" class="form-select" required>
+                <option value="weekly">Semanal</option>
+                <option value="monthly" selected>Mensual</option>
+                <option value="quarterly">Trimestral (últimos 3 meses)</option>
+                <option value="semiannual">Semestral</option>
+                <option value="annual">Anual</option>
+            </select>
+        </div>
+
+        <!-- Selección de Celda -->
+        <div class="form-group">
+            <label class="form-label">Celda <span class="obligatorio">*</span></label>
+            <select name="cell_id" class="form-select" required>
+                <option value="">-- Seleccione una celda --</option>
+                {% for cell in cells %}
+                    <option value="{{ cell.id }}">{{ cell.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Selección de Año -->
+        <div class="form-group">
+            <label class="form-label">Año <span class="obligatorio">*</span></label>
+            <select name="year" id="yearSelect" class="form-select" required>
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Selección de Mes (para reportes semanales, mensuales y trimestrales) -->
+        <div class="form-group" id="monthGroup">
+            <label class="form-label">Mes <span class="obligatorio">*</span></label>
+            <select name="month" id="monthSelect" class="form-select">
+                {% for month_num, month_name in months %}
+                    <option value="{{ month_num }}" {% if month_num == current_month %}selected{% endif %}>{{ month_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Selección de Semana (solo para reportes semanales) -->
+        <div class="form-group" id="weekGroup" style="display: none;">
+            <label class="form-label">Semana del Mes <span class="obligatorio">*</span></label>
+            <select name="week" id="weekSelect" class="form-select">
+                {% for week in weeks %}
+                    <option value="{{ week }}">Semana {{ week }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Botones -->
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn btn-secondary">
+                <svg style="width: 1rem; height: 1rem; margin-right: 0.5rem;" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/>
+                </svg>
+                Generar Reporte Excel
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Información adicional -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Información del Reporte</h3>
+    </div>
+    <div style="color: #a0aec0; line-height: 1.6;">
+        <p><strong style="color: #ffffff;">El reporte incluye:</strong></p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li><strong>Datos de Recaps Diarios:</strong> Piezas planeadas/producidas, defectos totales, tiempo muerto, disponibilidad, rendimiento, calidad y OEE</li>
+            <li><strong>Registros de Downtime:</strong> Causa, inicio, fin, duración y comentarios de cada tiempo muerto</li>
+            <li><strong>Registros de Defectos:</strong> Causa, cantidad, tipo, modelo afectado y comentarios</li>
+        </ul>
+        <p style="margin-top: 1rem;"><strong style="color: #ffffff;">Tipos de reporte:</strong></p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li><strong>Semanal:</strong> Datos de una semana específica del mes seleccionado (7 días)</li>
+            <li><strong>Mensual:</strong> Datos consolidados de todo el mes seleccionado</li>
+            <li><strong>Trimestral:</strong> Últimos 3 meses hasta el mes seleccionado</li>
+            <li><strong>Semestral:</strong> Primer semestre (Enero-Junio) o Segundo semestre (Julio-Diciembre) según el mes seleccionado</li>
+            <li><strong>Anual:</strong> Datos consolidados de todo el año seleccionado</li>
+        </ul>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: #718096;">
+            <strong>Nota:</strong> El reporte genera un archivo Excel con 22 columnas que incluyen todos los datos de producción, downtimes y defectos de la celda seleccionada en el periodo indicado.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const reportType = document.getElementById('reportType');
+        const monthGroup = document.getElementById('monthGroup');
+        const weekGroup = document.getElementById('weekGroup');
+        const monthSelect = document.getElementById('monthSelect');
+        const weekSelect = document.getElementById('weekSelect');
+
+        function updateFormFields() {
+            const type = reportType.value;
+            
+            if (type === 'weekly') {
+                // Semanal: necesita mes y semana
+                monthGroup.style.display = 'block';
+                weekGroup.style.display = 'block';
+                monthSelect.required = true;
+                weekSelect.required = true;
+            } else if (type === 'monthly' || type === 'quarterly') {
+                // Mensual y Trimestral: necesita mes
+                monthGroup.style.display = 'block';
+                weekGroup.style.display = 'none';
+                monthSelect.required = true;
+                weekSelect.required = false;
+            } else if (type === 'semiannual') {
+                // Semestral: el mes determina el semestre (necesita mes)
+                monthGroup.style.display = 'block';
+                weekGroup.style.display = 'none';
+                monthSelect.required = true;
+                weekSelect.required = false;
+            } else { // annual
+                // Anual: solo necesita año
+                monthGroup.style.display = 'none';
+                weekGroup.style.display = 'none';
+                monthSelect.required = false;
+                weekSelect.required = false;
+            }
+        }
+
+        reportType.addEventListener('change', updateFormFields);
+        updateFormFields(); // Inicializar en carga
+    });
+</script>
+{% endblock %}

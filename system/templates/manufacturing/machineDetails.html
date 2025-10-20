@@ -10,7 +10,7 @@
 </div>
 
 <!-- Botones de acciones rápidas -->
-<div class="mb-8" style="display: flex; justify-content: flex-end; gap: 1rem; flex-wrap: wrap;">
+<div class="mb-8" style="display: flex; justify-content: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 10px;">
     <a href="{% url 'hrxhr' cell.id %}"><button class="btn btn-secondary"> Hora x Hora </button></a>
     <a href="{% url 'downtime' cell.id %}"><button class="btn btn-secondary">Tiempo muerto</button></a>
     <a href="{% url 'defects' cell.id %}"><button class="btn btn-secondary">Registrar defecto</button></a>  
@@ -102,9 +102,9 @@
         {% endif %}
         
         <!-- Sección de resumen de producción total dentro de la misma columna -->
-        <div class="mt-6" style="border-top: 1px solid #4a5568; padding-top: 1.5rem;">
-            <h3 class="section-title">Resumen total por modelo</h3>
-            <p class="section-subtitle">Total de productos para {{ today }}</p>
+        <div class="mt-6" style="margin-top: 25px;">
+            <h3 class="card-title">Resumen total por modelo</h3>
+            <p class="card-subtitle">Total de productos para {{ today }}</p>
             
             {% if planned_today %}
                 <div class="custom-table-wrapper">
