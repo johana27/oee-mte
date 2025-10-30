@@ -17,38 +17,70 @@
     <a href="{% url 'recap' cell.id %}"><button class="btn btn-secondary">Cerrar día</button></a>
 </div>
 
-<!-- Contenedor principal con dos columnas -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: stretch;">
-    
-    <!-- Columna izquierda - Producción planeada -->
+<div class="card">
+    <div style="display: flex; flex-direction: row; gap: 10px; margin-bottom: 25px;">
+        <div class="stat-card-enhanced blue" style="flex: 1;">
+            <div class="stat-content">
+                <div class="stat-label">Piezas Planeadas</div>
+                <div class="stat-value">{{ total_planned }}</div>
+                <div class="stat-icon-box blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card-enhanced blue" style="flex: 1;">
+            <div class="stat-content">
+                <div class="stat-label">Piezas Realizadas</div>
+                <div class="stat-value">{{ total_done }}</div>
+                <div class="stat-icon-box green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card-enhanced blue" style="flex: 1;">
+            <div class="stat-content">
+                <div class="stat-label">Avance</div>
+                <div class="stat-value">{{ progress }} %</div>
+                <div class="stat-icon-box purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
     <div class="card">
         <div class="card-header">
             <h2 class="card-title"> Tablero hora por hora. </h2>
             <p class="card-description">{{ today }}</p>
         </div>
-        
+
         {% if hrxhr %}
-            <div class="custom-table-wrapper">               
-                <table class="custom-table">
+            <div class="table-container">               
+                <table class="table">
                     <thead>
                         <tr>
-                            <th> Hora </th>
-                            <th> Modelo </th>
-                            <th> Piezas </th>
+                            <th style="text-align: center;"> Hora </th>
+                            <th style="text-align: center;"> Modelo </th>
+                            <th style="text-align: center;"> Piezas </th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for hour in hrxhr %}
                         <tr>
-                            <td> {{ hour.get_hour_display }} </td>
-                            <td> {{ hour.production_detail.model_routing }} </td>
-                            <td> {{ hour.production_detail.quantity}} </td>
+                            <td style="text-align: center;"> {{ hour.get_hour_display }} </td>
+                            <td style="text-align: center;"> {{ hour.production_detail.model }} </td>
+                            <td style="text-align: center;"> {{ hour.pieces}} </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-
         {% else %}
             <div class="empty-state">
                 <div class="empty-state-icon">
@@ -61,191 +93,5 @@
             </div>
         {% endif %}
     </div>
-
-    <!-- Columna derecha - Tiempos muertos -->
-    <div class="card">
-        <div class="card-header">
-            <h2 class="card-title">Producción planeada para hoy</h2>
-            <p class="card-description">{{ today }}</p>
-        </div>
-        
-        {% if planned_today %}
-            <div class="custom-table-wrapper">               
-                <table class="custom-table">
-                    <thead>
-                        <tr>
-                            <th> Modelo </th>
-                            <th> Piezas </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for detail in production_details %}
-                        <tr>
-                            <td> {{ detail.model_routing.model.name }} </td>
-                            <td> {{ detail.quantity}} </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                    </svg>
-                </div>
-                <h3 class="mb-2">No hay producción planeada</h3>
-                <p>No se encontró producción programada para hoy</p>
-            </div>
-        {% endif %}
-        
-        <!-- Sección de resumen de producción total dentro de la misma columna -->
-        <div class="mt-6" style="margin-top: 25px;">
-            <h3 class="card-title">Resumen total por modelo</h3>
-            <p class="card-subtitle">Total de productos para {{ today }}</p>
-            
-            {% if planned_today %}
-                <div class="custom-table-wrapper">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Modelo</th>
-                                <th>Total piezas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for summary in production_summary %}
-                                <tr>
-                                    <td>{{ summary.model_name }}</td>
-                                    <td class="text-center">
-                                        <span class="pill pill-primary">{{ summary.total_pieces }}</span>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            
-                            <!-- Fila de total general -->
-                            <tr style="background-color: #374151; font-weight: 600;">
-                                <td style="border-top: 2px solid #4a5568;">
-                                    <strong>TOTAL GENERAL</strong>
-                                </td>
-                                <td class="text-center" style="border-top: 2px solid #4a5568;">
-                                    <span class="pill pill-success">{{ total_pieces }}</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <div class="empty-state" style="padding: 2rem;">
-                    <h4 style="margin-bottom: 0.5rem;">No hay datos</h4>
-                    <p style="font-size: 0.875rem;">No se puede generar el resumen sin producción planeada</p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-<style>
-    /* Wrapper personalizado para tablas - sin overflow por defecto */
-    .custom-table-wrapper {
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-
-    /* Estilos de tabla personalizados */
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed; /* Esto es clave para que respete el contenedor */
-    }
-
-    .custom-table thead th {
-        text-align: center;
-        padding: 0.75rem 0.5rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-bottom: 2px solid #4a5568;
-    }
-
-    .custom-table tbody td {
-        text-align: center;
-        padding: 0.75rem 0.5rem;
-        border-bottom: 1px solid #4a5568;
-        word-wrap: break-word; /* Para texto largo */
-        overflow-wrap: break-word;
-    }
-
-    .custom-table tbody tr:hover {
-        background-color: rgba(74, 85, 104, 0.3);
-        transition: background-color 0.2s ease;
-    }
-
-    /* Responsive para tablets (menor a 1024px) */
-    @media (max-width: 1024px) {
-        .custom-table {
-            font-size: 0.875rem;
-        }
-
-        .custom-table thead th,
-        .custom-table tbody td {
-            padding: 0.625rem 0.375rem;
-        }
-    }
-
-    /* Responsive para tablets pequeñas y móviles */
-    @media (max-width: 768px) {
-        div[style*="grid-template-columns"] {
-            grid-template-columns: 1fr !important;
-        }
-        
-        div[style*="justify-content: flex-end"] {
-            justify-content: center !important;
-        }
-
-        /* En móviles, permitir scroll horizontal si es absolutamente necesario */
-        .custom-table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .custom-table {
-            font-size: 0.8rem;
-            min-width: 100%; /* Se ajusta al contenedor */
-        }
-
-        .custom-table thead th,
-        .custom-table tbody td {
-            padding: 0.5rem 0.25rem;
-        }
-    }
-
-    /* Para pantallas muy pequeñas */
-    @media (max-width: 480px) {
-        .custom-table {
-            font-size: 0.75rem;
-        }
-
-        .custom-table thead th,
-        .custom-table tbody td {
-            padding: 0.4rem 0.2rem;
-        }
-    }
-
-    .space-y-3 > * + * {
-        margin-top: 0.75rem;
-    }
-    
-    .downtime-item {
-        transition: all 0.2s;
-    }
-    
-    .downtime-item:hover {
-        background-color: #4a5568 !important;
-    }
-</style>
 
 {% endblock %}

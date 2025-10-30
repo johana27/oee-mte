@@ -23,7 +23,7 @@
                 <tbody>
                     {% for production in production_today %}
                         <tr>
-                            <td style="text-align: center;""> {{ production.hrxhr.production_detail.model_routing.model.name }} </td>
+                            <td style="text-align: center;""> {{ production.hrxhr.production_detail.model.name }} </td>
                             <td style="text-align: center;""> {{ production.production }} </td>
                             <td style="text-align: center;""> {{ production.hrxhr.pieces }} </td>
                             <td style="text-align: center;""> {{ production.comments }} </td>
@@ -57,7 +57,7 @@
             <tbody>
                 {% for defect in defects_today %}
                     <tr>
-                        <td style="text-align: center;""> {{ defect.production_detail.model_routing.model.name }} </td>
+                            <td style="text-align: center;""> {{ defect.production_detail.model.name }} </td>
                         <td style="text-align: center;""> {{ defect.cause.name }} </td>
                         <td style="text-align: center;""> {{ defect.quantity }} </td>
                         <td style="text-align: center;""> {{ defect.comments }} </td>

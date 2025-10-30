@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Cell, modelRouting
+from core.models import Cell, Model
 from django.contrib.auth.models import User
 
 class plannedProduction(models.Model):
@@ -16,11 +16,11 @@ class plannedProduction(models.Model):
 
 class productionDetail(models.Model):
     planned_production = models.ForeignKey(plannedProduction, on_delete=models.CASCADE, related_name='details')
-    model_routing = models.ForeignKey(modelRouting, on_delete=models.CASCADE)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
         
     def __str__(self):
-        return f"{self.model_routing.model.name} - {self.planned_production.cell.name} - {self.planned_production.date.strftime('%y-%m-%d')}"
+        return f"{self.model.name} - {self.planned_production.cell.name} - {self.planned_production.date.strftime('%y-%m-%d')}"
     
     class Meta: 
         verbose_name_plural = "Produccion detalles"

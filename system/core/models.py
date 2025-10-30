@@ -27,16 +27,6 @@ class Model (models.Model):
     class Meta: 
         verbose_name_plural = 'Modelos'
 
-class modelRouting (models.Model):
-    model = models.ForeignKey(Model, on_delete=models.PROTECT)
-    cell = models.ForeignKey(Cell, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return self.model.name
-
-    class Meta: 
-        verbose_name_plural = 'Routings'
-
 class Cause (models.Model):
     name = models.CharField(max_length=100, unique=True)
     type = models.CharField(max_length=50, choices=[

@@ -33,9 +33,9 @@ class PlannedProductionForm(forms.ModelForm):
 class ProductionDetailForm(forms.ModelForm):
     class Meta:
         model = productionDetail
-        fields = ["model_routing", "quantity"]
+        fields = ["model", "quantity"]
         widgets = {
-            "model_routing": forms.Select(attrs={"class": "form-select"}),
+            "model": forms.Select(attrs={"class": "form-select"}),
             "quantity": forms.NumberInput(attrs={"class": "form-input", "min": 0}),
         }
 

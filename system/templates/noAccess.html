@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 60vh; padding: 2rem 0;">
+    <div class="card" style="max-width: 600px; width: 100%; text-align: center;">
+        <!-- Icono de acceso denegado -->
+        <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+            <div style="background-color: #757575; border-radius: 50%; padding: 2rem; display: inline-flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m4.9 4.9 14.2 14.2"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Título principal -->
+        <h1 class="page-title" style="color: #e53e3e; margin-bottom: 1rem;">
+            Acceso Denegado
+        </h1>
+
+        <!-- Mensaje principal -->
+        <p style="font-size: 1.125rem; color: #a0aec0; margin-bottom: 1.5rem;">
+            No tienes permisos para acceder a esta página.
+        </p>
+
+        <!-- Información adicional -->
+        <div style="background-color: #2d3748; border: 1px solid #757575; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem;">
+            <p style="color: #ffffff;">
+                Esta sección está disponible únicamente para usuarios con permisos de 
+                <span style="font-weight: 600; color: #FFD700;">Administrador</span> o <span style="font-weight: 600; color: #FFD700;">Ingeniero</span>.
+            </p>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
+            <a href="{% url 'machineList' %}" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Volver al Inicio
+            </a>
+            
+            <button onclick="history.back()" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5m7-7l-7 7 7 7"/>
+                </svg>
+                Página Anterior
+            </button>
+        </div>
+
+        <!-- Mensaje de ayuda -->
+        <div style="background-color: #2d3748; border: 1px solid #4a5568; border-radius: 0.75rem; padding: 1.5rem;">
+            <p style="font-size: 0.875rem; color: #a0aec0; margin: 0;">
+                Si crees que deberías tener acceso a esta sección, contacta con tu administrador del sistema.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

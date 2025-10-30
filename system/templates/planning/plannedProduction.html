@@ -30,7 +30,7 @@
                                 <div class="production-list">
                                     {% for detail in date.details %}
                                         <div class="card" style="text-align: left;">
-                                            <div class="pill pill-primary">{{ detail.model_routing.model.name }}</div><br>
+                                            <div class="pill pill-primary">{{ detail.model.name }}</div><br>
                                             <div class="pill pill-secondary" style="margin-top: 8px;">{{ detail.quantity }} pzs</div>
                                         </div>
                                     {% endfor %}

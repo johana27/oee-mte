@@ -83,8 +83,8 @@
                             <div class="card-body" id="formset-container">
                                 <div class="formset-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1rem;">
                                     <div class="form-group">
-                                        <label class="form-label" for="{{ f.model_routing.id_for_label }}"> Modelo <span class="obligatorio">*</span></label>
-                                        {{ detail_form.model_routing }}
+                                        <label class="form-label" for="{{ f.model.id_for_label }}"> Modelo <span class="obligatorio">*</span></label>
+                                        {{ detail_form.model }}
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label" for="{{ f.quantity.id_for_label }}"> Cantidad <span class="obligatorio">*</span></label>

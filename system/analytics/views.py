@@ -10,14 +10,37 @@ from calendar import monthrange
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import redirect
+# =========================================
+# Definir roles
+# =========================================
+def es_lider(user):
+    return user.groups.filter(name='lider').exists()
+
+def es_ingeniero(user):
+    return user.groups.filter(name__in=['admin', 'Ingeniero']).exists()
+
+# =========================================
+# Template por si no tiene permisos
+# =========================================
+def noAccess(request):
+    return render(request, 'noAccess.html', status=403)
 
 # =========================================
 # Lista máquinas dashborads
 # =========================================
-class machineListView(ListView):
+class machineListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Cell
     template_name = 'analytics/analyticsList.html'
     context_object_name = 'machines'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name__in=['admin', 'Ingeniero']).exists()
+    
+    def handle_no_permission(self):
+        return redirect('noAccess')
 
 # =========================================
 # Obtiene el lunes y domingo
@@ -27,7 +50,10 @@ def weekRange(date=None):
         date = timezone.now()
 
     date_only = date.date()
-    start = datetime.combine(date_only, datetime.min.time())
+
+    days_since_monday = date_only.weekday()
+    monday = date_only - timedelta(days=days_since_monday)
+    start = datetime.combine(monday, datetime.min.time())
     start = timezone.make_aware(start)
     end = start + timedelta(days=6, hours=23, minutes=59, seconds=59)
     
@@ -36,6 +62,8 @@ def weekRange(date=None):
 # =========================================
 # Dashboard máquina 
 # =========================================
+@login_required
+@user_passes_test(es_ingeniero, login_url='noAccess')
 def machineDashboard(request, cell_id):
     cell = get_object_or_404(Cell, id=cell_id)
     start, end = weekRange()
@@ -80,6 +108,8 @@ def machineDashboard(request, cell_id):
 # =========================================
 # Dashboard de todo el piso
 # =========================================
+@login_required
+@user_passes_test(es_ingeniero, login_url='noAccess')
 def plantDashboard(request):
     now = timezone.now()
     
@@ -382,6 +412,8 @@ def get_top_downtimes(year, month, limit=10):
 # =========================================
 # Vista para reportes
 # =========================================
+@login_required
+@user_passes_test(es_ingeniero, login_url='noAccess')
 def Reports(request):
     # Si se solicita generar el reporte
     if request.GET.get('generate'):
@@ -517,11 +549,11 @@ def Reports(request):
         
         # ============ DEFECTOS ============
         defects = Defect.objects.filter(
-            production_detail__model_routing__cell=cell,
+            production_detail__planned_production__cell=cell,
             created_at__gte=start_date,
             created_at__lte=end_date
         ).select_related(
-            'cause', 'production_detail__model_routing__model', 'created_by'
+            'cause', 'production_detail__model', 'created_by'
         ).order_by('created_at')
         
         for defect in defects:

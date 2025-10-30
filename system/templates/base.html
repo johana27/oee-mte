@@ -364,6 +364,271 @@
             margin-bottom: 1rem;
         }
 
+        :root {
+        --color-primary: #3B82F6;
+        --color-success: #10B981;
+        --color-warning: #F59E0B;
+        --color-danger: #EF4444;
+        --color-purple: #8B5CF6;
+        --color-cyan: #06B6D4;
+    }
+
+    /* Grid principal */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    /* Tarjetas de estadísticas verticales */
+    .stats-vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .stat-card-enhanced {
+        background-color: #374151;
+        border-radius: 0.5rem;
+        padding: 1.25rem 1.5rem;
+        border-left: 4px solid var(--accent-color);
+        border: 1px solid #4b5563;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stat-card-enhanced.blue { --accent-color: var(--color-primary); }
+    .stat-card-enhanced.green { --accent-color: var(--color-success); }
+    .stat-card-enhanced.purple { --accent-color: var(--color-purple); }
+    .stat-card-enhanced.yellow { --accent-color: var(--color-warning); }
+    .stat-card-enhanced.red { --accent-color: var(--color-danger); }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: #9CA3AF;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.35rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-description {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+    }
+
+    .stat-icon-box {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .stat-icon-box.blue { 
+        background-color: rgba(59, 130, 246, 0.15);
+        color: var(--color-primary);
+    }
+    .stat-icon-box.green { 
+        background-color: rgba(16, 185, 129, 0.15);
+        color: var(--color-success);
+    }
+    .stat-icon-box.purple { 
+        background-color: rgba(139, 92, 246, 0.15);
+        color: var(--color-purple);
+    }
+    .stat-icon-box.red { 
+        background-color: rgba(239, 68, 68, 0.2);
+        color: var(--color-danger);
+    }
+    .stat-icon-box.yellow { 
+        background-color: rgba(245, 158, 11, 0.2);
+        color: var(--color-warning);
+    }
+
+    .stat-icon-box svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    /* Secciones con encabezado */
+    .section-box {
+        background-color: #2d3748;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        border: 1px solid #4a5568;
+    }
+
+    .section-header {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #4a5568;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .section-subtitle {
+        font-size: 0.8rem;
+        color: #9CA3AF;
+        margin: 0;
+    }
+
+    /* Grid para gráficas */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Grid para ranking de celdas */
+    .ranking-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Tarjetas de celda */
+    .cell-card {
+        background-color: #374151;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        border: 1px solid #4b5563;
+        margin-bottom: 0.75rem;
+    }
+
+    .cell-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .cell-name {
+        font-weight: 600;
+        color: #FFFFFF;
+        font-size: 0.95rem;
+    }
+
+    .cell-oee {
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .cell-oee.excellent { color: var(--color-success); }
+    .cell-oee.good { color: var(--color-warning); }
+    .cell-oee.poor { color: var(--color-danger); }
+
+    .cell-metrics {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.75rem;
+        color: #9CA3AF;
+    }
+
+    .cell-metric span {
+        color: #FFFFFF;
+        font-weight: 600;
+    }
+
+    /* Lista de defectos/downtimes */
+    .issue-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .issue-item {
+        background-color: #374151;
+        border-radius: 0.375rem;
+        padding: 0.875rem;
+        margin-bottom: 0.5rem;
+        border-left: 3px solid var(--color-danger);
+    }
+
+    .issue-item.downtime {
+        border-left-color: var(--color-warning);
+    }
+
+    .issue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .issue-name {
+        font-weight: 600;
+        color: #FFFFFF;
+        font-size: 0.9rem;
+    }
+
+    .issue-value {
+        font-weight: 700;
+        color: #FFFFFF;
+        font-size: 1rem;
+    }
+
+    .issue-details {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ranking-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Scrollbar personalizado */
+    .issue-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .issue-list::-webkit-scrollbar-track {
+        background: #2d3748;
+        border-radius: 3px;
+    }
+
+    .issue-list::-webkit-scrollbar-thumb {
+        background: #4a5568;
+        border-radius: 3px;
+    }
+
+    .issue-list::-webkit-scrollbar-thumb:hover {
+        background: #718096;
+    }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -707,22 +972,26 @@
             <div class="logo"> <a style="text-decoration: none; color: #ffffff;" href="{% url 'machineList' %}"><span style="color: #FF0000; border-color: #000;"> Sistema </span> OEE</a></div>
             <nav>
                 <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="{% url 'machineList' %}" class="navbar-link {% if request.resolver_match.url_name == 'machineList' %}active{% endif %}"> Máquinas </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <span class="nav-link">
-                            Dashboard
-                            <span class="dropdown-arrow">▼</span>
-                        </span>
-                        <div class="dropdown-content">
-                            <a href="{% url 'analyticsList' %}"> Máquina </a>
-                            <a href="{% url 'plantDashboard' %}"> General </a>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'reports' %}"> Reportes</a>
-                    </li>
+                    {% if user.groups.all.0.name == 'lider' or user.groups.all.0.name == 'admin' or user.is_superuser %}
+                        <li class="nav-item">
+                            <a href="{% url 'machineList' %}" class="navbar-link {% if request.resolver_match.url_name == 'machineList' %}active{% endif %}"> Máquinas </a>
+                        </li>
+                    {% endif %}
+                    {% if user.groups.all.0.name == 'Ingeniero' or user.groups.all.0.name == 'admin' or user.is_superuser %}
+                        <li class="nav-item dropdown">
+                            <span class="nav-link">
+                                Dashboard
+                                <span class="dropdown-arrow">▼</span>
+                            </span>
+                            <div class="dropdown-content">
+                                <a href="{% url 'analyticsList' %}"> Máquina </a>
+                                <a href="{% url 'plantDashboard' %}"> General </a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'reports' %}"> Reportes</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item dropdown">
                         <span class="nav-link">
                             <svg class="user-icon" viewBox="0 0 24 24">

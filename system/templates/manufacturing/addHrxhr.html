@@ -7,6 +7,25 @@
 <div class="page-title"> Registrar hora por hora </div>
 <div class="page-subtitle"> Registre los modelos y su cantidad total a producir por hora el día de hoy. </div>
 
+<!-- Mostrar errores generales del formset (como workorders duplicadas) -->
+{% if formset.non_form_errors %}
+    <div class="alert alert-danger" style="margin: 20px; padding: 15px; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; color: #c00;">
+        <strong>Error:</strong>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for error in formset.non_form_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<!-- Mostrar error personalizado -->
+{% if error %}
+    <div class="alert alert-danger" style="margin: 20px; padding: 15px; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; color: #c00;">
+        {{ error }}
+    </div>
+{% endif %}
+
 <div class="card">
     <p class="card-title"> Hora por hora </p>
     <form method="POST">
@@ -18,6 +37,13 @@
                     <div class="form-group">
                         <label class="form-label" for="id_date"> Fecha <span class="obligatorio"> * </span></label>
                         {{ f.date }}
+                        {% if f.date.errors %}
+                            <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                                {% for error in f.date.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -30,14 +56,35 @@
                                 <div class="form-group">
                                     <label class="form-label" for="id_workorder"> Work order <span class="obligatorio"> * </span></label>
                                     {{ f.workorder }} 
+                                    {% if f.workorder.errors %}
+                                        <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                                            {% for error in f.workorder.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="{{ f.model_routing.id_for_label }}"> Modelo <span class="obligatorio">*</span></label>
-                                    {{ f.model_routing }}
+                                    <label class="form-label" for="{{ f.model.id_for_label }}"> Modelo <span class="obligatorio">*</span></label>
+                                    {{ f.model }}
+                                    {% if f.model.errors %}
+                                        <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                                            {% for error in f.model.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="{{ f.quantity.id_for_label }}"> Cantidad <span class="obligatorio">*</span></label>
                                     {{ f.quantity }}
+                                    {% if f.quantity.errors %}
+                                        <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                                            {% for error in f.quantity.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label delete-label" id="delete-btn"> Eliminar </label>

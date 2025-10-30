@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import plannedDownTime, plannedDownTimeCells, plannedProduction, productionDetail
-from core.models import Cell, modelRouting
+from core.models import Cell, Model
 from django.views.generic import ListView, CreateView
 from django.db.models import Q
 from django.utils import timezone
@@ -41,7 +41,7 @@ def productionPlan(request, cell_id):
     production_data = plannedProduction.objects.filter(
         cell=cell,
         date__range=[week_dates[0], week_dates[-1]]
-    ).prefetch_related('details__model_routing')
+    ).prefetch_related('details__model')
     
     # Organizar los datos por fecha
     production_by_date = {}
@@ -125,7 +125,7 @@ def addProduction(request):
                 for row in preview_data:
                     if not Cell.objects.filter(name=row["Celda"]).exists():
                         errors.append(f"Celda '{row['Celda']}' no existe.")
-                    if not modelRouting.objects.filter(model__name=row["Modelo"]).exists():
+                    if not Model.objects.filter(name=row["Modelo"]).exists():
                         errors.append(f"Modelo '{row['Modelo']}' no existe.")
                     if row["Cantidad"] is None or row["Cantidad"] <= 0:
                         errors.append(f"Cantidad inválida en WorkOrder {row['WorkOrder']}.")
@@ -153,8 +153,8 @@ def addProduction(request):
                 cell = Cell.objects.get(name=row["Celda"])
                 
                 try:
-                    model_routing = modelRouting.objects.get(model__name=row["Modelo"])
-                except modelRouting.DoesNotExist:
+                    model = Model.objects.get(name=row["Modelo"])
+                except Model.DoesNotExist:
                     messages.error(request, f"Modelo '{row["Modelo"]}' no existe. Saltando WorkOrder {row["WorkOrder"]}.")
                     continue
 
@@ -167,7 +167,7 @@ def addProduction(request):
 
                 production_detail, detail_created = productionDetail.objects.get_or_create(
                     planned_production=planned_production,
-                    model_routing=model_routing,
+                    model=model,
                     defaults={'quantity': row["Cantidad"]}
                 )
                 if not detail_created:

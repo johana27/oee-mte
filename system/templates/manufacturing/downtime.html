@@ -7,6 +7,18 @@
 <h1 class="page-title">Tiempo muerto máquina {{cell.name}}</h1>
 <p class="page-subtitle">Inicie el timer o registre el tiempo muerto</p>
 
+<!-- Mostrar errores generales del formulario -->
+{% if form.non_field_errors %}
+    <div class="alert alert-danger" style="margin: 20px; padding: 15px; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; color: #c00;">
+        <strong>Error:</strong>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Registro de Tiempo Muerto</h3>
@@ -25,6 +37,13 @@
             <div class="form-group">
                 <label class="form-label">Fin del tiempo muerto</label>
                 {{ form.end }}
+                {% if form.end.errors %}
+                    <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                        {% for error in form.end.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
 
@@ -85,6 +104,11 @@ function toggleTimer() {
         
         isRunning = true;
         
+        // Actualizar URL con parámetro de timer
+        const url = new URL(window.location.href);
+        url.searchParams.set('timer', 'on');
+        window.history.pushState({}, '', url);
+        
         // Actualizar duración cada segundo
         timerInterval = setInterval(updateDuration, 1000);
         updateDuration(); // Actualizar inmediatamente
@@ -102,6 +126,11 @@ function toggleTimer() {
         btn.classList.add('btn-secondary');
         
         isRunning = false;
+        
+        // Remover parámetro de timer de la URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('timer');
+        window.history.pushState({}, '', url);
         
         // Calcular duración final
         updateDuration();
@@ -138,6 +167,15 @@ function formatDateTime(date) {
 window.addEventListener('beforeunload', function() {
     if (timerInterval) {
         clearInterval(timerInterval);
+    }
+});
+
+// Iniciar timer automáticamente si viene el parámetro timer=on en la URL
+window.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('timer') === 'on' && !isRunning) {
+        // Iniciar el timer automáticamente
+        toggleTimer();
     }
 });
 </script>

@@ -20,13 +20,13 @@ class Defect(models.Model):
     @property
     def model(self):
         if self.production_detail:
-            return self.production_detail.model_routing.model
+            return self.production_detail.model
         return None
     
     @property
     def cell(self):
         if self.production_detail:
-            return self.production_detail.model_routing.cell
+            return self.production_detail.planned_production.cell
         return None
 
     def __str__(self):
@@ -96,7 +96,7 @@ class Production(models.Model):
 
     def __str__(self):
         if self.hrxhr:
-            cell_name = self.hrxhr.production_detail.model_routing.cell.name
+            cell_name = self.hrxhr.production_detail.planned_production.cell.name
             return f"{cell_name} - {self.pub_date.strftime('%Y-%m-%d %H:%M')} - {self.production} pcs"
         return f"Producción - {self.production} pcs"
     

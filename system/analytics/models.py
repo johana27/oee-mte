@@ -182,7 +182,7 @@ class Recap(models.Model):
         from django.db.models import Min, Max
 
         productions = hourlyProduction.objects.filter(
-            production_detail__model_routing__cell=self.cell,
+            production_detail__planned_production__cell=self.cell,
             pieces__gt=0
         ).aggregate(
             first_hour=Min("hour"),

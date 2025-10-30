@@ -7,6 +7,25 @@
 <div class="page-title"> Registrar hora por hora </div>
 <div class="page-subtitle"> Registre los modelos y su cantidad total a producir por hora el día de hoy. </div>
 
+<!-- Mostrar errores generales del formset (como horas duplicadas) -->
+{% if formset.non_form_errors %}
+    <div class="alert alert-danger" style="margin: 20px; padding: 15px; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; color: #c00;">
+        <strong>Error:</strong>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for error in formset.non_form_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<!-- Mostrar error personalizado -->
+{% if error %}
+    <div class="alert alert-danger" style="margin: 20px; padding: 15px; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; color: #c00;">
+        {{ error }}
+    </div>
+{% endif %}
+
 <div class="card">
     <p class="card-title"> Hora por hora </p>
     <form method="POST">
@@ -20,9 +39,30 @@
                 {{ formset.management_form }}
                 {% for f in formset %}
                         <tr>
-                            <td style="text-align: center;"> {{ f.hour }} </td>
-                            <td style="text-align: center;"> {{ f.production_detail }} </td>
-                            <td style="text-align: center;"> {{ f.pieces }} </td>
+                            <td style="text-align: center;"> 
+                                {{ f.hour }}
+                                {% if f.hour.errors %}
+                                    <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                                        {{ f.hour.errors }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center;"> 
+                                {{ f.production_detail }}
+                                {% if f.production_detail.errors %}
+                                    <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                                        {{ f.production_detail.errors }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center;"> 
+                                {{ f.pieces }}
+                                {% if f.pieces.errors %}
+                                    <div style="color: #c00; font-size: 12px; margin-top: 5px;">
+                                        {{ f.pieces.errors }}
+                                    </div>
+                                {% endif %}
+                            </td>
                         </tr>
                 {% endfor %}
             </table>

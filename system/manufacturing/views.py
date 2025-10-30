@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from planning.models import plannedDownTime, plannedDownTimeCells, plannedProduction, productionDetail
+from planning.models import plannedDownTime, plannedDownTimeCells, productionDetail, plannedProduction
 from .models import Defect, DownTime, hourlyProduction, Production
-from .forms import PlannedProductionFullForm, DownTimeForm, DefectForm, HrxhrFormSet, ProductionFormSet, RecapForm
-from core.models import Cell, modelRouting 
+from .forms import PlannedProductionFullForm, DownTimeForm, DefectForm, HrxhrFormSet, ProductionFormSet, RecapForm, PlannedProductionFormSet
+from core.models import Cell, Model 
 from django.db import models
 from django.db.models import Q, Sum
 from django.utils import timezone
@@ -19,15 +19,24 @@ def machineDetails(request, cell_id):
     production_details = productionDetail.objects.filter(planned_production__cell=cell, planned_production__date=today)
     planned_today = plannedProduction.objects.filter(cell=cell, date=today)
     hrxhr = hourlyProduction.objects.filter(production_detail__planned_production__cell=cell, production_detail__planned_production__date=today)
+    total_planned = hourlyProduction.objects.filter(production_detail__planned_production__cell=cell, production_detail__planned_production__date=today, pieces__gte=1).aggregate(total=Sum('pieces'))['total'] or 0
+    total_done = Production.objects.filter(hrxhr__production_detail__planned_production__cell=cell, hrxhr__production_detail__planned_production__date=today, production__gte=1).aggregate(total=Sum('production'))['total'] or 0
+    if total_planned >= 1: 
+        progress = (float(total_done) * 100.0) / float(total_planned)
+    else:
+        progress = 0
+    progress = max(0.0, min(100.0, round(progress, 2)))
     
-
     context = {
         'cell': cell,
         'plannings': plannings,
         'hrxhr': hrxhr,
         'production_details': production_details,
         'planned_today': planned_today,
+        'total_planned': total_planned,
+        'total_done': total_done, 
         'today': today,
+        'progress': progress, 
     }
 
     return render(request, 'manufacturing/machineDetails.html', context)
@@ -37,30 +46,30 @@ def machineDetails(request, cell_id):
 # =========================================
 def addHrxhr(request, cell_id):
     cell = get_object_or_404(Cell, id=cell_id)
-    PlannedProductionFormSet = formset_factory(PlannedProductionFullForm, extra=1)
 
     if request.method == "POST":
-        formset = PlannedProductionFormSet(request.POST)
+        formset = PlannedProductionFormSet(request.POST, form_kwargs={'cell': cell})
 
         if formset.is_valid():
             master_date = None
             for form in formset:
-                if form.cleaned_data and form.cleaned_data.get("date"):
+                if form.cleaned_data and not form.cleaned_data.get('DELETE', False) and form.cleaned_data.get("date"):
                     master_date = form.cleaned_data["date"]
                     break
             
             if not master_date:
                 return render(request, "manufacturing/addHrxhr.html", {
                     "formset": formset,
+                    "cell": cell,
                     "error": "Debe especificar una fecha"
                 })
 
             for form in formset:
-                if not form.cleaned_data:
+                if not form.cleaned_data or form.cleaned_data.get('DELETE', False):
                     continue
                     
                 workorder = form.cleaned_data["workorder"]
-                model_routing = form.cleaned_data["model_routing"]
+                model = form.cleaned_data["model"]
                 quantity = form.cleaned_data["quantity"]
 
                 planned = plannedProduction.objects.create(
@@ -72,18 +81,17 @@ def addHrxhr(request, cell_id):
 
                 productionDetail.objects.create(
                     planned_production=planned,
-                    model_routing=model_routing,
+                    model=model,
                     quantity=quantity
                 )
 
             return redirect("hrxhr", cell_id=cell.id)
-        else:
-            print("Formset errors:", formset.errors)
     else:
         formset = PlannedProductionFormSet(form_kwargs={'cell': cell})
 
     return render(request, "manufacturing/addHrxhr.html", {
-        "formset": formset
+        "formset": formset,
+        "cell": cell
     })
 
 # =========================================
@@ -228,7 +236,7 @@ def recap (request, cell_id):
     cell = get_object_or_404(Cell, id=cell_id)
     today = date.today()
     production = Production.objects.filter(hrxhr__production_detail__planned_production__cell=cell, hrxhr__production_detail__planned_production__date=today)
-    defects = Defect.objects.filter(production_detail__model_routing__cell=cell, created_at__date=today)
+    defects = Defect.objects.filter(production_detail__planned_production__cell=cell, created_at__date=today)
     downtime = DownTime.objects.filter(cell=cell, created_at__date=today)
 
     total_planned_pieces = hourlyProduction.objects.filter(
