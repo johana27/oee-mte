@@ -6,7 +6,8 @@ class plannedProduction(models.Model):
     cell = models.ForeignKey(Cell, on_delete=models.CASCADE)
     date = models.DateField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    workorder = models.CharField()
+    workorder = models.CharField(max_length=100)
+    #100 caracteres para el wc
 
     def __str__(self):
         return f" Producción {self.cell.name} - {self.date.strftime('%Y-%m-%d')}"
