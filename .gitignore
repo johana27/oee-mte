@@ -1,0 +1,19 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+
+
+#py cache
+pycache/
+*.pyc
+*.pyo
+*.pyd
+
+#Virtual enviroment
+venv/
+env/
+ENV/
+
+
+#Base de datos
+db.sqlite3
+
+
