@@ -28,7 +28,6 @@ jobs:
       # The following section in your workflow is designed to catch build issues early on the client side, before deployment. This can be helpful for debugging and validation. However, if this step significantly increases deployment time and early detection is not critical for your workflow, you may remove this section to streamline the deployment process.
       - name: Create and Start virtual environment and Install dependencies
         run: |
-          cd $GITHUB_WORKSPACE
           python -m venv antenv
           source antenv/bin/activate
           pip install -r requirements.txt
@@ -64,9 +63,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_617F70171B6C45E3B43BA6D09A7D6216 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9675174052A443379369EB9FA7AB5D8E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_91074A53A9F845BA9E0D04F945BE6A0E }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E85CBA0A2FDB43E4B8D4CAF02A32B532 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E5FFA2D4DA134E0EA4B510B554154D26 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CD55D3B6560847D1BBD08C336DAAD848 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -74,6 +73,4 @@ jobs:
         with:
           app-name: 'mte-oee'
           slot-name: 'Production'
-
           
-
