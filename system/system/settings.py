@@ -11,8 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 #Comentario para disparar el 1er deploy
+#Segun comentario por que en primero ocupabada hacer git pull
+#gitcomentario para deploy
 
 from pathlib import Path
+import os
+#for db in azure or in local
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -93,10 +97,17 @@ WSGI_APPLICATION = 'system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+if os.environ.get("WEBSITE_SITE_NAME"):
+    DB_PATH = "/home/site/db.sqlite3"
+else:
+    DB_PATH = BASE_DIR / "db.sqlite3"
+    
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DB_PATH,
     }
 }
 
