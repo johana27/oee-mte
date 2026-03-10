@@ -1,5 +1,5 @@
 from django.db import models
-from planning.models import productionDetail
+from system.planning.models import productionDetail
 from core.models import Cause, Cell, Model
 from django.contrib.auth.models import User
 
