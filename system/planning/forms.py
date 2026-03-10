@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import plannedProduction, productionDetail, plannedDownTime, plannedDownTimeCells
-from core.models import Cell
+from system.core.models import Cell
 
 # =========================================
 # Form para subir un excel
