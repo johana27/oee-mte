@@ -1,7 +1,7 @@
 from django.db import models
 from core.models import Cell
-from manufacturing.models import Production, DownTime, Defect, hourlyProduction
-from planning.models import plannedDownTimeCells
+from system.manufacturing.models import Production, DownTime, Defect, hourlyProduction
+from system.planning.models import plannedDownTimeCells
 from django.db.models import Avg, Sum, Min, Max, Count
 from django.utils import timezone
 from calendar import monthrange

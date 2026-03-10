@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Cell, Model
+from system.core.models import Cell, Model
 from django.contrib.auth.models import User
 
 class plannedProduction(models.Model):

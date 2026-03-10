@@ -3,9 +3,9 @@ from django.forms import formset_factory, inlineformset_factory, modelformset_fa
 from datetime import date
 from django.utils import timezone
 from .models import Defect, DownTime, hourlyProduction, Production
-from analytics.models import Recap
-from core.models import Model, Cell, Cause
-from planning.models import productionDetail, plannedProduction
+from system.analytics.models import Recap
+from system.core.models import Model, Cell, Cause
+from system.planning.models import productionDetail, plannedProduction
 from django.core.exceptions import ValidationError
 
 # =========================================

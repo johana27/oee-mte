@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import plannedDownTime, plannedDownTimeCells, plannedProduction, productionDetail
-from core.models import Cell, Model
+from system.core.models import Cell, Model
 from django.views.generic import ListView, CreateView
 from django.db.models import Q
 from django.utils import timezone

@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from planning.models import plannedDownTime, plannedDownTimeCells, productionDetail, plannedProduction
+from system.planning.models import plannedDownTime, plannedDownTimeCells, productionDetail, plannedProduction
 from .models import Defect, DownTime, hourlyProduction, Production
 from .forms import PlannedProductionFullForm, DownTimeForm, DefectForm, HrxhrFormSet, ProductionFormSet, RecapForm, PlannedProductionFormSet
-from core.models import Cell, Model 
+from system.core.models import Cell, Model 
 from django.db import models
 from django.db.models import Q, Sum
 from django.utils import timezone

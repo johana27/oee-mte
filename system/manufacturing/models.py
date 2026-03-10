@@ -1,6 +1,6 @@
 from django.db import models
 from system.planning.models import productionDetail
-from core.models import Cause, Cell, Model
+from system.core.models import Cause, Cell, Model
 from django.contrib.auth.models import User
 
 class Defect(models.Model):
