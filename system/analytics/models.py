@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Cell
+from system.core.models import Cell
 from system.manufacturing.models import Production, DownTime, Defect, hourlyProduction
 from system.planning.models import plannedDownTimeCells
 from django.db.models import Avg, Sum, Min, Max, Count
