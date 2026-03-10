@@ -65,7 +65,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'system.urls'
+ROOT_URLCONF = 'system.system.urls'
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -74,7 +74,6 @@ STATICFILES_DIRS = [
     BASE_DIR / "system" / "static",
 ]
 
-ROOT_URLCONF = 'system.urls'
 
 TEMPLATES = [
     {
