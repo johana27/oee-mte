@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
-from core.models import Cell, Cause
+from system.core.models import Cell, Cause
 from .models import Recap
-from manufacturing.models import Defect, DownTime
+from system.manufacturing.models import Defect, DownTime
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.db.models import Avg, Sum, Count, Q
