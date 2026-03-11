@@ -11,9 +11,13 @@ pycache/
 venv/
 env/
 ENV/
+.env
 
 
 #Base de datos
-db.sqlite3
+*.sqlite3
+
+
+*.json
 
 

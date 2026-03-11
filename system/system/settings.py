@@ -14,8 +14,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 #Segun comentario por que en primero ocupabada hacer git pull
 #gitcomentario para deploy
 
+from dotenv import load_dotenv
 from pathlib import Path
 import os
+
+load_dotenv()
+
 #for db in azure or in local
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,16 +30,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t-*cz27hp7sdn(lwnwpoxk-wk@p(k1ylm@3^$u17t#2uhhx))!'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG","False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", '127.0.0.1').split(",")
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'core/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+#Conexion con azure y evitar problemas con CRSF
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.azurewebsites.net"
+]
 
 
 # Application definition
@@ -69,7 +78,6 @@ ROOT_URLCONF = 'system.system.urls'
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "system" / "static",
 ]
@@ -145,7 +153,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
