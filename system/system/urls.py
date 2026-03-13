@@ -25,3 +25,5 @@ urlpatterns = [
     path('data/', include('system.analytics.urls')),
     path('core/', include('system.core.urls')),
 ]
+
+
