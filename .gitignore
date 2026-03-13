@@ -17,7 +17,7 @@ ENV/
 #Base de datos
 *.sqlite3
 
-
+#json backups
 *.json
 
 

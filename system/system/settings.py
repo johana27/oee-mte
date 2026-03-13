@@ -17,6 +17,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+import dj_database_url
 
 load_dotenv()
 
@@ -117,6 +118,21 @@ DATABASES = {
         "NAME": DB_PATH,
     }
 }
+
+
+if os.getenv("DATABASE_URL"):
+    DATABASES = {
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
+    )
+}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
