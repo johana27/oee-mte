@@ -47,6 +47,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.azurewebsites.net"
 ]
 
+#cookies seguras
+SESSION_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = True
+SECURE_SSL_REDIRECT = True
+
 
 # Application definition
 
