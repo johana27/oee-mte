@@ -7,7 +7,11 @@ class Cell (models.Model):
         ('medium', 'Medianas'),
         ('large', 'Large'),
         ('embobinadora', 'Embobinadora'),
+        ('mov', 'MOV'),
+        ('filtro', 'Filtros'),
+
     ])
+
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

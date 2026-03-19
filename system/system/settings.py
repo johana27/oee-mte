@@ -43,7 +43,7 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'core/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-#Conexion con azure y evitar problemas con CRSF
+# Conexion con azure y evitar problemas con CRSF
 CSRF_TRUSTED_ORIGINS = [
     "https://*.azurewebsites.net"
 ]
@@ -109,11 +109,21 @@ WSGI_APPLICATION = 'system.system.wsgi.application'
 #postgrelite database 
 #adding new db
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL")
-    )
-}
+if os.getenv("WEBSITE_SITE_NAME"):
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.environ.get("DATABASE_URL")
+        )
+    }
+else:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
