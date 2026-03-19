@@ -38,6 +38,7 @@ DEBUG = os.getenv("DEBUG","False") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", '').split(",")
 
+
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'core/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
@@ -46,11 +47,6 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 CSRF_TRUSTED_ORIGINS = [
     "https://*.azurewebsites.net"
 ]
-
-#cookies seguras
-SESSION_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = True
-SECURE_SSL_REDIRECT = True
 
 
 # Application definition
