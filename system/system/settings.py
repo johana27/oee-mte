@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 #gitcomentario para deploy
 #deploy for adding the db
 #deployment with basic plan
+#deploy
 
 from dotenv import load_dotenv
 from pathlib import Path
