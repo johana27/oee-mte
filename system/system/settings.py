@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 #Comentario para disparar el 1er deploy
 #Segun comentario por que en primero ocupabada hacer git pull
 #gitcomentario para deploy
+#deploy for adding the db
 
 from dotenv import load_dotenv
 from pathlib import Path
